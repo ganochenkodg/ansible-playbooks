@@ -1,0 +1,26 @@
+---
+# Attach docker
+- name: Install attach-docker deps
+  apt:
+    pkg: bash-completion
+    state: present
+    update_cache: yes
+    cache_valid_time: 600
+
+- name: Create attach-docker script
+  copy:
+    backup: no
+    src: attach-docker/attach-docker
+    dest: /usr/local/bin/attach-docker
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Create attach-docker completion
+  copy:
+    backup: no
+    src: attach-docker/bash_completion
+    dest: /etc/bash_completion.d/attach-docker
+    owner: root
+    group: root
+    mode: 0755

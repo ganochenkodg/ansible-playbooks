@@ -1,0 +1,15 @@
+#!/bin/sh
+#
+# Usage: attach-docker <container_name> [command]
+
+NAME="$1"
+
+shift
+
+if [ -z "$*" ]; then
+    CMD="/bin/bash --login"
+else
+    CMD="$@"
+fi
+
+exec docker exec -it $NAME $CMD

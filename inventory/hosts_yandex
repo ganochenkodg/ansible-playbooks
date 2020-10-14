@@ -1,0 +1,21 @@
+[process:children]
+process-external
+process-internal
+
+[process-internal:vars]
+ansible_ssh_common_args='-o ProxyCommand="ssh -W %h:%p -q dganochenko@84.201.169.148"'
+
+[process-internal]
+database1-yandex ansible_host=10.131.0.32 myname=database1-yandex
+database2-yandex ansible_host=10.131.0.8 myname=database2-yandex
+kettle ansible_host=10.131.0.6 myname=kettle
+healthcare ansible_host=10.131.0.13 myname=healthcare
+database-dwh ansible_host=10.131.0.35 myname=database-dwh
+tableau ansible_host=10.131.0.6 myname=tableau
+
+[process-external]
+controller-yandex ansible_host=84.201.169.148 myname=controller-yandex
+application-yandex ansible_host=84.201.145.28 myname=application-yandex
+k8s-master ansible_host=130.193.44.202 myname=k8s-master
+railscard-test ansible_host=84.201.150.64 myname=railscard-test
+dremio ansible_host=84.201.144.140 myname=dremio

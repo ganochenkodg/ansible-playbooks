@@ -1,0 +1,15 @@
+---
+- name: Remove root SSH access
+  lineinfile: 
+    dest: /etc/ssh/sshd_config 
+    regexp: "^PermitRootLogin" 
+    line: "PermitRootLogin no" 
+    state: present
+  notify: restart ssh
+
+- name: Remove password SSH access
+  lineinfile: 
+    dest: /etc/ssh/sshd_config 
+    regexp: "^PasswordAuthentication" 
+    line: "PasswordAuthentication no" 
+    state: present

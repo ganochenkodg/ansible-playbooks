@@ -1,0 +1,9 @@
+---
+- name: Restart dockerio
+  service:
+    name: docker
+    state: restarted
+  when: no_restart is not defined
+  tags:
+    - docker
+    - service

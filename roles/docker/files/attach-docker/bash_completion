@@ -1,0 +1,29 @@
+#!bash
+#
+# bash completion file for attach-docker
+#
+# This script provides supports completion of:
+#  - container ids and names
+#
+# To enable the completions either:
+#  - place this file in /etc/bash_completion.d
+#  or
+#  - copy this file and add the line below to your .bashrc after
+#    bash completion features are loaded
+#     . attach-docker.bash
+
+_attach-docker() {
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+
+    # get possible list of containers from config files at /etc/init/ dir
+    names=`docker ps --format \"{{.Names}}\"`
+    opts="--help --verbose --version"
+    if [[ ${cur} == * ]]; then
+        COMPREPLY=($( compgen -W "${names}" -- ${cur}))
+        return 0
+    fi
+}
+
+complete -F _attach-docker attach-docker

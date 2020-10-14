@@ -1,0 +1,10 @@
+---
+- name: Reload ipset tables
+  command: ipset-reload.sh
+  register: command_result
+  failed_when: "command_result.rc != 0"
+
+- name: Reload ferm
+  service:
+    name: 'ferm'
+    state: 'restarted'

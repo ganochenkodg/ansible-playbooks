@@ -1,0 +1,18 @@
+---
+
+ipset_tables:
+  allowed_ports:
+    set_option: 'bitmap:port range 0-65535'
+    entries:
+      ssh: tcp:22
+
+ferm_rules:
+  filter:
+    INPUT:
+      default_rules:
+        - {rule: "policy DROP;",  comment: "global policy"}
+        - {rule: "mod state state (ESTABLISHED RELATED) ACCEPT;", comment: "connection tracking"}
+        - {rule: "interface lo ACCEPT;", comment: "allow local packet"}
+        - {rule: "proto icmp icmp-type (echo-request fragmentation-needed time-exceeded) ACCEPT;", comment: "allow icmp"}
+        - {rule: "saddr (172.16.0.0/12 192.168.0.0/16 10.130.0.0/24 10.131.0.0/24) ACCEPT;", comment: "allow local connections"}
+        - {rule: "mod set set allowed_ports dst ACCEPT;", comment: "Allow connections to dst ports"}

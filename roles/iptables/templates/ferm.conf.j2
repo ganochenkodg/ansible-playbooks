@@ -1,0 +1,57 @@
+@hook pre "ipset-reload.sh";
+@def $has_docker = `dpkg -l | grep -q docker-ce && echo -n 1 || echo -n 0`;
+
+{% for table, chains in ferm_rules|dictsort %}
+table {{ table }} {
+{% for chain, rules in chains|dictsort %}
+  chain {{ chain }} {
+{% for value in rules.default_rules %}
+    {{value.rule}} # {{value.comment|default('')}}
+{% endfor %}
+{% if rules.rules is defined %}
+{% for value in rules.rules %}
+    {{value.rule}} # {{value.comment|default('')}}
+{% endfor %}
+{% endif %}
+  }
+{% endfor %}
+}
+{% endfor %}
+
+@if $has_docker {
+table filter {
+  chain DOCKER;
+  chain DOCKER-ISOLATION-STAGE-1{
+    RETURN;
+  }
+  chain DOCKER-ISOLATION-STAGE-2{
+    RETURN;
+  }
+  chain DOCKER-USER;
+  chain FORWARD {
+    outerface docker0 jump DOCKER-USER;
+    outerface docker0 jump DOCKER-ISOLATION-STAGE-1;
+    outerface docker0 jump DOCKER;
+    outerface docker0 mod conntrack ctstate (RELATED ESTABLISHED) ACCEPT;
+    interface docker0 outerface !docker0 ACCEPT;
+    interface docker0 outerface docker0 ACCEPT;
+  }
+}
+table nat {
+  chain DOCKER {
+    interface docker0 RETURN;
+  }
+  chain PREROUTING {
+    mod addrtype dst-type LOCAL jump DOCKER;
+  }
+  chain OUTPUT {
+    daddr !127.0.0.0/8 mod addrtype dst-type LOCAL jump DOCKER;
+  }
+  chain POSTROUTING {
+    saddr 172.17.0.0/16 outerface !docker0 MASQUERADE;
+    saddr 172.18.0.0/16 outerface !docker0 MASQUERADE;
+    saddr 10.42.0.0/16 outerface !docker0 MASQUERADE;
+    saddr 10.43.0.0/16 outerface !docker0 MASQUERADE;
+  }
+}
+}

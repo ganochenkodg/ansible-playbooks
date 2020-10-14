@@ -1,0 +1,3 @@
+Server={{ zabbix_server }}
+Hostname={{ ansible_local.main.myname | default(ansible_hostname) }}
+LogFile=/var/log/zabbix/zabbix_agentd.log

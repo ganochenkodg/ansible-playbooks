@@ -1,0 +1,13 @@
+# vim:ft=ansible:
+---
+- hosts: all
+  become: yes
+  environment:
+    HOSTNAME: '{{ myname }}'
+  roles:
+    - apt_common
+    - atop
+    - hosts
+    - docker
+    - zabbix_agent
+    - iptables

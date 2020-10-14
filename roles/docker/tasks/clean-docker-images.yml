@@ -1,0 +1,29 @@
+---
+- name: remove cleaner script
+  file:
+    path: /usr/local/bin/clean-docker-images.rb
+    state: absent
+
+- name: copy clean-docker-images
+  copy:
+    backup: no
+    src: clean-docker-images.rb
+    dest: /usr/local/bin/clean-docker-images
+    owner: root
+    group: root
+    mode: 0755
+
+
+- name: clean-docker-images cronjob
+  cron:
+    backup: no
+    name: 'docker_cleaner'
+    state: present
+    user: root
+    job: >
+         /usr/local/bin/clean-docker-images
+         {% if docker_cleaner_images_whitelist is defined %} --whitelist '{{ docker_cleaner_images_whitelist }}' {% endif %}
+         > /var/log/clean-docker-images.log 2>&1
+    minute: 10
+    hour: "{{ docker_cleaner_images_hour | default('22') }}"
+  when: clean_cron is defined and clean_cron == "true"

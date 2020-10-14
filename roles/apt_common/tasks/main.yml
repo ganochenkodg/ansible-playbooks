@@ -1,0 +1,16 @@
+---
+- name: Install packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - ncdu
+    - apt-transport-https
+    - curl
+    - ca-certificates
+    - software-properties-common
+    - ruby
+    - htop
+    - nano

@@ -1,0 +1,32 @@
+---
+- name: Copy zabbix repo package
+  copy:
+    src: zabbix-release_4.0-2+buster_all.deb
+    dest: /var/cache/apt
+
+- name: Install zabbix repo package
+  apt:
+    force: yes
+    deb: /var/cache/apt/zabbix-release_4.0-2+buster_all.deb
+    update_cache: yes
+
+- name: Install zabbix-agent
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - zabbix-agent
+
+- name: Create zabbix_agentd.conf
+  template:
+    backup: no
+    src: 'zabbix_agentd.conf.j2'
+    dest: '/etc/zabbix/zabbix_agentd.conf'
+  notify: Restart zabbix agent
+
+- name: Activate zabbix-agent service
+  service:
+    name: zabbix-agent
+    enabled: yes

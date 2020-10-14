@@ -1,0 +1,17 @@
+---
+- name: Install packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - atop
+
+- name: Cron removal of outdated atop logs
+  cron:
+    name: Remove outdated atop logs
+    minute: "0"
+    hour: "*/6"
+    job: "/usr/bin/find /var/log/atop/ -name 'atop_*' -mtime +{{ atop_logs_keep_last_days }} -delete"
+  tags: atop

@@ -1,0 +1,13 @@
+---
+- name: Fill /etc/hosts
+  template:
+    src: hosts.j2
+    dest: /etc/hosts
+    owner: root
+    group: root
+    mode: 0644
+  tags: hosts
+- name: Disable cloudinit
+  command: touch /etc/cloud/cloud-init.disabled
+  args:
+    creates: touch /etc/cloud/cloud-init.disabled

@@ -1,0 +1,28 @@
+---
+- name: Create "sudo-nopasswd" group
+  group:
+    name: sudo-nopasswd
+
+- name: Add "sudo-nopasswd" group to "sudoers" file
+  lineinfile:
+    dest: /etc/sudoers
+    line: '%sudo-nopasswd ALL=(ALL:ALL) NOPASSWD:ALL'
+    regexp: '^%sudo-nopasswd'
+
+- name: Create a new user
+  user:
+    name: "{{ new_user_name }}"
+    groups:
+     - docker
+     - sudo-nopasswd
+    state: present
+    append: true
+    shell: /bin/bash 
+  when: new_user_name is defined
+
+- name: Set authorized key taken from file
+  authorized_key:
+    user: "{{ new_user_name }}"
+    state: present
+    key: "{{ lookup('file', '{{ user_pub_key }}' ) }}"
+  when: new_user_name is defined and user_pub_key is defined

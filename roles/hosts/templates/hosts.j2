@@ -1,0 +1,17 @@
+127.0.0.1	localhost
+{% if (ansible_local.main.myname is defined) %}
+{{ ansible_private_ipv4_address }}  {{ ansible_local.main.myname }}
+{% endif %}
+{% if additional_hosts is defined %}
+{% for key in additional_hosts|sort %}
+{{ additional_hosts[key].ip }} {{ key }} 
+{% endfor %}
+{% endif %}
+
+# The following lines are desirable for IPv6 capable hosts
+::1 ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+ff02::3 ip6-allhosts

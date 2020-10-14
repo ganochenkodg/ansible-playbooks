@@ -1,0 +1,43 @@
+---
+- name: Add Apt signing key from official docker repo
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add docker official repository for ubuntu xenial
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu xenial stable
+    state: present
+
+- name: Install docker-ce
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - docker-ce
+
+- name: Ensure docker-compose is installed and available
+  get_url:
+    url: https://github.com/docker/compose/releases/download/1.22.0/docker-compose-{{ ansible_system }}-{{ ansible_userspace_architecture }}
+    dest: /usr/local/bin/docker-compose
+    mode: 'a+x'
+
+- name: Add daemon.json file
+  copy:
+    src: daemon.json
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Copy docker config
+  template:
+    src: docker_config.j2
+    dest: /etc/default/docker
+  notify: Restart dockerio
+
+- include: attach-docker.yml
+
+- include: clean-docker-images.yml
