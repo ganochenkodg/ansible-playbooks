@@ -1,13 +1,13 @@
 ---
 - name: Copy zabbix repo package
   copy:
-    src: zabbix-release_4.0-2+buster_all.deb
+    src: zabbix-release_4.4-1+bionic_all.deb
     dest: /var/cache/apt
 
 - name: Install zabbix repo package
   apt:
     force: yes
-    deb: /var/cache/apt/zabbix-release_4.0-2+buster_all.deb
+    deb: /var/cache/apt/zabbix-release_4.4-1+bionic_all.deb
     update_cache: yes
 
 - name: Install zabbix-agent
